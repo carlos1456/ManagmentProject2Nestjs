@@ -11,6 +11,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AuthenticationGuard } from './Common/Guards/authentication.guard';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './Common/Filters/http-exception.filter';
+import { RequestController } from './modules/request/request.controller';
+import { RequestService } from './modules/request/request.service';
+import { RequestModule } from './modules/request/request.module';
 
 @Module({
   imports: [
@@ -18,6 +21,7 @@ import { HttpExceptionFilter } from './Common/Filters/http-exception.filter';
     ConfigModule.forRoot(),
     MongooseModule.forRoot('mongodb://127.0.0.1:27017/eventmanagment2'),
     AuthModule,
+    RequestModule,
   ],
   providers: [
     {
@@ -28,6 +32,8 @@ import { HttpExceptionFilter } from './Common/Filters/http-exception.filter';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
+    RequestService,
   ],
+  controllers: [RequestController],
 })
 export class AppModule {}
