@@ -3,7 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/modules/user/schemas/schema.user';
 import { JwtService } from '@nestjs/jwt';
@@ -30,5 +30,8 @@ export class UserService {
 
   async findOne(username): Promise<any> {
     return this.userModel.findOne({ email: username });
+  }
+  async findbyid(id: Types.ObjectId): Promise<User> {
+    return await this.userModel.findById(id);
   }
 }

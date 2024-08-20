@@ -18,7 +18,6 @@ export class AuthenticationGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     //disablying authantication for some routes
-    console.log(this.reflector);
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -38,7 +37,6 @@ export class AuthenticationGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
       request['user'] = payload;
-      console.log('>>>>>>>>>>>>>>>>>>>', request['user']);
     } catch {
       throw new UnauthorizedException();
     }

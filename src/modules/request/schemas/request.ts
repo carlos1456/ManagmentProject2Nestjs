@@ -1,19 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-export type UserDocument = HydratedDocument<Request>;
+export type RequestDocument = HydratedDocument<Request>;
 
 @Schema()
 export class Request {
   @Prop({ type: Types.ObjectId, ref: 'users' })
-  requester: Types.ObjectId;
+  requesterId: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'users' })
-  recipient: Types.ObjectId;
+  recipientId: Types.ObjectId;
 
   @Prop({
     type: String,
     enum: ['accepted', 'rejected', 'pending'],
-    default: 'rejected',
+    default: 'pending',
   })
   status: string;
 }
