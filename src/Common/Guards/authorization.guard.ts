@@ -32,7 +32,7 @@ export class AuthorizationGuard implements CanActivate {
     if (!userid) {
       throw new UnauthorizedException('User not authenticated');
     }
-    const user = await this.userService.findbyid(userid);
+    const user = await this.userService.finduserbyid(userid);
     console.log(user);
 
     const hasRole = requiredRoles.some((role) => user.roles?.includes(role));

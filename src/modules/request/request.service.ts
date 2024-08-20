@@ -1,4 +1,3 @@
-// src/modules/request/request.service.ts
 import {
   Injectable,
   ConflictException,
@@ -9,70 +8,74 @@ import { Model, Types } from 'mongoose';
 import { Request, RequestDocument } from './schemas/request';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDTO } from './dto/update-request-status.dto';
-import { UserModule } from '../user/user.module';
 
 @Injectable()
 export class RequestService {
   constructor(
     @InjectModel(Request.name)
-    private readonly requestModel: Model<Request>,
+    private readonly requestModel: Model<RequestDocument>,
   ) {}
 
   async sendRequest(
     newRequest: CreateRequestDto,
-    userid: Types.ObjectId,
+    userId: Types.ObjectId,
   ): Promise<RequestDocument> {
-    const requesterId = userid;
+    const requesterId = userId;
     const recipientId = newRequest.recipientId;
 
-    // we need check block user
+    // Check if the request already exists
     const existingRequest = await this.isAlreadyRequested(
       requesterId,
       recipientId,
     );
 
     if (existingRequest) {
-      if (existingRequest.status === 'accepted') {
-        throw new ConflictException('Request already accepted');
+      switch (existingRequest.status) {
+        case 'accepted':
+          throw new ConflictException('Request already accepted');
+        case 'rejected':
+          throw new ConflictException('Request already rejected');
+        default:
+          throw new ConflictException('Request already sent');
       }
-      if (existingRequest.status === 'rejected') {
-        throw new ConflictException('Request already rejected');
-      }
-      throw new ConflictException('Request already sent');
     }
 
     const requestObj = {
-      requesterId: requesterId,
-      recipientId: recipientId,
+      requesterId,
+      recipientId,
       status: 'pending',
     };
+
     return await this.requestModel.create(requestObj);
   }
 
-  async UpdateRequestStatus(
+  async updateRequestStatus(
     requestObj: UpdateRequestDTO,
   ): Promise<RequestDocument> {
-    const requestid = requestObj.requestId;
-    const isrequestexist = await this.requestModel.findById(requestid);
+    const requestId = requestObj.requestId;
+    const existingRequest = await this.requestModel.findById(requestId).exec();
 
-    if (!isrequestexist) {
-      throw new NotFoundException(`${requestid} Not Found`);
+    if (!existingRequest) {
+      throw new NotFoundException(`${requestId} Not Found`);
     }
-    return await this.requestModel.findByIdAndUpdate(
-      requestid,
-      { status: requestObj.status },
-      { new: true },
-    );
+
+    return await this.requestModel
+      .findByIdAndUpdate(
+        requestId,
+        { status: requestObj.status },
+        { new: true },
+      )
+      .exec();
   }
 
   async isAlreadyRequested(
     requesterId: Types.ObjectId,
     recipientId: Types.ObjectId,
-  ): Promise<RequestDocument> {
+  ): Promise<RequestDocument | null> {
     return await this.requestModel
       .findOne({
-        requesterId: requesterId,
-        recipientId: recipientId,
+        requesterId,
+        recipientId,
       })
       .exec();
   }

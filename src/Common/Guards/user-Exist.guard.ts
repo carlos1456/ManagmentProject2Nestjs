@@ -21,7 +21,7 @@ export class UserExistingGuard implements CanActivate {
         'Recipient ID is required and must be a valid ObjectId',
       );
     }
-    const recipient = await this.usersService.findbyid(recipientId);
+    const recipient = await this.usersService.finduserbyid(recipientId);
 
     if (!recipient) {
       throw new NotFoundException('User not found');

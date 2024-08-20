@@ -4,10 +4,10 @@ export type RequestDocument = HydratedDocument<Request>;
 
 @Schema()
 export class Request {
-  @Prop({ type: Types.ObjectId, ref: 'users' })
+  @Prop({ type: Types.ObjectId, ref: 'users', required: true })
   requesterId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'users' })
+  @Prop({ type: Types.ObjectId, ref: 'users', required: true })
   recipientId: Types.ObjectId;
 
   @Prop({

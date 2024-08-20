@@ -13,18 +13,18 @@ import { Roles } from '../../Common/Decorators/roles.decorator';
 import { Role } from 'src/Common/Enums/roles.enum.';
 import { Public } from 'src/Common/Decorators/public.decorator';
 import { Types } from 'mongoose';
-import { UserExistingGuard } from 'src/Common/Guards/userExist.guard';
+import { UserExistingGuard } from 'src/Common/Guards/user-Exist.guard';
 import { UpdateRequestDTO } from './dto/update-request-status.dto';
+import { isBlockedGuard } from 'src/Common/Guards/already-block.guard';
 
-@Controller('request')
-@Public()
-//@UseGuards(AuthorizationGuard)
+@Controller('api/user/request')
+@UseGuards(AuthorizationGuard)
 @Roles(Role.User)
 export class RequestController {
   constructor(private readonly requestService: RequestService) {}
 
   @Post('sendRequest')
-  @UseGuards(UserExistingGuard)
+  @UseGuards(UserExistingGuard, isBlockedGuard)
   async sendRequestHandler(
     @Req() request: Request,
     @Body() createRequestDto: CreateRequestDto,
@@ -40,7 +40,7 @@ export class RequestController {
 
   @Post('UpdateRequestStatus')
   async UpdateRequestStatusHandler(@Body() updateRequestDTO: UpdateRequestDTO) {
-    const obj = await this.requestService.UpdateRequestStatus(updateRequestDTO);
+    const obj = await this.requestService.updateRequestStatus(updateRequestDTO);
 
     return {
       statusCode: HttpStatus.OK,

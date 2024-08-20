@@ -1,13 +1,13 @@
-// src/app.module.ts
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
-import { AuthenticationGuard } from './Common/Guards/authentication.guard';
-import { HttpExceptionFilter } from './Common/Filters/http-exception.filter';
 import { RequestModule } from './modules/request/request.module';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { UserModule } from './modules/user/user.module';
+import { BlockModule } from './modules/block/block.module';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { HttpExceptionFilter } from './Common/Filters/http-exception.filter';
+import { AuthenticationGuard } from './Common/Guards/authentication.guard';
 
 @Module({
   imports: [
@@ -16,6 +16,7 @@ import { UserModule } from './modules/user/user.module';
     AuthModule,
     UserModule,
     RequestModule,
+    BlockModule,
   ],
   providers: [
     {
@@ -25,6 +26,17 @@ import { UserModule } from './modules/user/user.module';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
     },
   ],
   controllers: [],

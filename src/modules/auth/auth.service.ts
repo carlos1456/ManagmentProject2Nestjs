@@ -14,8 +14,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
-  async signIn(username: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne(username);
+  async signIn(username: string, pass: string): Promise<String> {
+    const user = await this.userService.finduserbyEmail(username);
     if (!user) {
       11;
       throw new NotFoundException('User does not exist');
@@ -26,8 +26,6 @@ export class AuthService {
     }
     const payload = { sub: user._id, username: user.email };
     const token = await this.jwtService.signAsync(payload);
-    return {
-      token,
-    };
+    return token;
   }
 }
