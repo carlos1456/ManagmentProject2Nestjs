@@ -8,6 +8,10 @@ import { BlockModule } from './modules/block/block.module';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { HttpExceptionFilter } from './Common/Filters/http-exception.filter';
 import { AuthenticationGuard } from './Common/Guards/authentication.guard';
+import { ChatModule } from './modules/chat/chat.module';
+import { WebsocketService } from './modules/websocket/websocket.service';
+import { WebsocketController } from './modules/websocket/websocket.controller';
+import { WebsocketModule } from './modules/websocket/websocket.module';
 
 @Module({
   imports: [
@@ -17,6 +21,8 @@ import { AuthenticationGuard } from './Common/Guards/authentication.guard';
     UserModule,
     RequestModule,
     BlockModule,
+    ChatModule,
+    WebsocketModule,
   ],
   providers: [
     {
@@ -38,7 +44,8 @@ import { AuthenticationGuard } from './Common/Guards/authentication.guard';
         },
       }),
     },
+    WebsocketService,
   ],
-  controllers: [],
+  controllers: [WebsocketController],
 })
 export class AppModule {}
