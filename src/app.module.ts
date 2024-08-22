@@ -1,6 +1,6 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { RequestModule } from './modules/request/request.module';
 import { UserModule } from './modules/user/user.module';
@@ -13,10 +13,28 @@ import { WebsocketService } from './modules/websocket/websocket.service';
 import { WebsocketController } from './modules/websocket/websocket.controller';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 
+import config from './config/configration';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/eventmanagment2'),
+    ConfigModule.forRoot(
+      {
+        isGlobal:true,
+        load:config
+      }
+    ),
+    
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const databaseConfig = configService.get('DATABASE_CONFIG');
+        return {
+          uri: databaseConfig.getDatabaseUrl(),
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        };
+      },
+    }),
     AuthModule,
     UserModule,
     RequestModule,

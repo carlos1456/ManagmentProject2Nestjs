@@ -3,8 +3,7 @@ import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/schema.user';
 import { UserService } from './user.service';
-import { LoggerMiddleware } from '../../Common/middleware/logger.middleware';
-import { HashPasswordInterceptor } from '../../Common/Interceptors/hash-password.interceptor';
+
 
 @Module({
   imports: [
